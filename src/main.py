@@ -1,15 +1,15 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 import uvicorn
-from db.base import engine, Base
+from .db.base import engine, Base
 from contextlib import asynccontextmanager
-from db.models import model
+from .db.models import model
 from routers import sign_up, authentication
 from authx.exceptions import MissingTokenError, RateLimitExceeded
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import Redis
 from fastapi_mail.email_utils import DefaultChecker
-from mailsystem.config import Config
+from .mailsystem.config import Config
 from loguru import logger
 
 templates = Jinja2Templates(directory="templates")
