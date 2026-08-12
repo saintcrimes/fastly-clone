@@ -174,4 +174,4 @@ See [`.env.example`](./.env.example) for the complete list. Key variables includ
 
 ## 📄 License
 
-This project is open source and available for learning purposes. Add a license file if you intend to distribute it publicly under specific terms.
+💖This project is open source and available for learning purposes.
