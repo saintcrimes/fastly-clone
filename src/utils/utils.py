@@ -5,9 +5,9 @@ import bcrypt
 import logging
 from fastapi.responses import JSONResponse
 from itsdangerous import URLSafeTimedSerializer
-from mailsystem.config import Config
+from ..mailsystem.config import Config
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.models.model import users
+from ..db.models.model import users
 
 serializer = URLSafeTimedSerializer(
     secret_key=Config.JWT_SECRET_KEY,
