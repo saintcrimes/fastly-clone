@@ -3,13 +3,14 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 from sqlalchemy.orm import DeclarativeBase
+from ..mailsystem.config import Config
 
 
 path = Path(__file__).resolve().parent.parent.parent / ".env"
 
 load_dotenv(path)
 
-db_url = os.getenv("DATABASE_URL")
+db_url = Config.DATABASE_URL
 
 engine = create_async_engine(
     db_url
