@@ -13,8 +13,8 @@ from dotenv import load_dotenv
 from pathlib import Path
 from ..utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
 from fastapi.templating import Jinja2Templates
-from mailsystem.config import Config 
-from mailsystem.mail import create_message, mail
+from ..mailsystem.config import Config 
+from ..mailsystem.mail import create_message, mail
 import logging, time
 from rich.logging import RichHandler
 from datetime import timedelta
