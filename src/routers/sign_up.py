@@ -80,13 +80,13 @@ async def sign_up(
     domain = data.email.split("@")[-1]
     domain_with_at = "@" + domain
 
-    checker = request.app.state.email_checker
+    # checker = request.app.state.email_checker
 
-    if await checker.is_disposable(data.email):
-        raise HTTPException(
-            status_code=400,
-            detail="Temporary emails are not allowed"
-        ) 
+    # if await checker.is_disposable(data.email):
+        # raise HTTPException(
+            # status_code=400,
+            # detail="Temporary emails are not allowed"
+        # ) 
 
     hashed = bcrypt.hashpw(data.password.encode("utf-8"), bcrypt.gensalt())
     role = 1 # Default value

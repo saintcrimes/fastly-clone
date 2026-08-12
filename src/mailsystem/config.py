@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
     JWT_EXPIRY: int
-    REDIS_HOST: str
+    # REDIS_HOST: str
     REDIS_PORT: int = 6379
     MAIL_USERNAME: str
     MAIL_PASSWORD: str

@@ -20,17 +20,20 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
 
-    redis_client = Redis.from_url(Config.REDIS_HOST)
+    # redis_client = Redis.from_url(Config.REDIS_HOST)
     # if you want to add here redis you uncomment variables inside of DefaultChecker()
     checker = DefaultChecker(
         # db_provider="redis",
         # redis_client=redis_client
     )
 
-    await checker.fetch_temp_email_domains()
-    # await checker.init_redis()
+    try:
 
-    app.state.email_checker = checker
+        await checker.fetch_temp_email_domains()
+    # await checker.init_redis()
+    except Exception as e:
+        logger.warning(f"Could not fetch temp emails domain: {e}")
+    # app.state.email_checker = checker
 
     yield
 
