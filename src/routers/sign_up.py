@@ -20,11 +20,13 @@ from rich.logging import RichHandler
 from datetime import timedelta
 from datetime import datetime
 from ..schemas.auth import emailSchema
+import os
 
+log_path = "/tmp/info.log" if os.environ.get("VERCEL") else "info.log"
 
 JWT_EXP = timedelta(minutes=Config.JWT_EXPIRY)
 
-file_handler = logging.FileHandler("info.log", encoding="utf-8")
+file_handler = logging.FileHandler(log_path, encoding="utf-8")
 file_handler.setFormatter(logging.Formatter(
     "%(asctime)s [%(name)s] %(levelname)s: %(message)s"
 ))
