@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Auth Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1419;
+    --panel: #161B22;
+    --panel-2: #1C232C;
+    --border: #2A313C;
+    --text: #E6EDF3;
+    --text-dim: #8B98A5;
+    --amber: #F2B705;
+    --teal: #2DD4BF;
+    --red: #F2555A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',sans-serif;min-height:100vh;padding:32px 20px;
+  }
+  .wrap{max-width:640px;margin:0 auto;}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:6px;
+  }
+  h1{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;margin:0 0 4px 0;}
+  .sub{color:var(--text-dim);font-size:13px;}
+  a.back{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);
+    text-decoration:none;border:1px solid var(--border);border-radius:6px;padding:7px 12px;
+  }
+  a.back:hover{color:var(--text);border-color:var(--text-dim);}
+
+  .strip{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+  @media(max-width:520px){.strip{grid-template-columns:1fr;}}
+  .chip{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px;}
+  .chip-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .chip-name{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--red);}
+  .dot.on{background:var(--teal);}
+  .chip-val{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .chip-val.empty{color:var(--text-dim);}
+
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:22px;}
+  .panel h2{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;margin:0 0 4px 0;}
+  .panel .desc{color:var(--text-dim);font-size:12.5px;margin-bottom:18px;}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  .field input{
+    width:100%;padding:10px 12px;background:var(--panel-2);border:1px solid var(--border);
+    border-radius:6px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;
+  }
+  .field input:focus{border-color:var(--amber);}
+
+  button{
+    width:100%;padding:11px;border:none;border-radius:6px;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;
+    cursor:pointer;letter-spacing:0.02em;margin-top:4px;background:var(--teal);color:#052422;
+  }
+  button:hover{opacity:0.9;}
+
+  .result{
+    margin-top:14px;padding:12px;border-radius:6px;font-family:'IBM Plex Mono',monospace;
+    font-size:12px;white-space:pre-wrap;word-break:break-word;display:none;
+  }
+  .result.show{display:block;}
+  .result.ok{background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.3);color:var(--teal);}
+  .result.err{background:rgba(242,85,90,0.08);border:1px solid rgba(242,85,90,0.3);color:var(--red);}
+
+  .note{
+    margin-top:20px;font-size:12.5px;color:var(--text-dim);line-height:1.6;
+    border-left:2px solid var(--amber);padding:10px 14px;background:var(--panel);border-radius:0 8px 8px 0;
+  }
+  .note code{color:var(--amber);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Session Inspector</div>
+      <h1>Admin</h1>
+      <div class="sub">Requires an active session from /admin_login.</div>
+    </div>
+    <a class="back" href="admin_login">&larr; Sign in</a>
+  </div>
+
+  <div class="strip">
+    <div class="chip">
+      <div class="chip-top"><span class="chip-name">access_token_cookie</span><span class="dot" id="dotAccess"></span></div>
+      <div class="chip-val empty" id="valAccess">not present</div>
+    </div>
+    <div class="chip">
+      <div class="chip-top"><span class="chip-name">csrf_access_token</span><span class="dot" id="dotCsrf"></span></div>
+      <div class="chip-val empty" id="valCsrf">not present</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Add admin</h2>
+    <div class="desc">POST /admin_add — CSRF header attached automatically from the cookie above.</div>
+    <form id="adminForm">
+      <div class="field"><label>Email</label><input type="email" id="adminEmail" required></div>
+      <div class="field"><label>Password</label><input type="password" id="adminPass" required></div>
+      <button type="submit">Create admin</button>
+    </form>
+    <div class="result" id="adminResult"></div>
+  </div>
+
+  <div class="note">
+    If <code>csrf_access_token</code> shows empty above even right after signing in, that cookie is set as HttpOnly server-side — this page can't read it, and neither can any frontend. Only <code>access_token_cookie</code> should be HttpOnly; <code>csrf_access_token</code> needs to stay readable for the double-submit CSRF pattern to work.
+  </div>
+</div>
+
+<script>
+function getCookie(name) {
+  const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return match ? decodeURIComponent(match[2]) : null;
+}
+function truncate(v, n=28){ return v.length > n ? v.slice(0, n) + '…' : v; }
+
+function refreshStrip() {
+  const access = getCookie('access_token_cookie');
+  const csrf = getCookie('csrf_access_token');
+
+  const dotA = document.getElementById('dotAccess');
+  const valA = document.getElementById('valAccess');
+  const dotC = document.getElementById('dotCsrf');
+  const valC = document.getElementById('valCsrf');
+
+  if (access) {
+    dotA.classList.add('on'); valA.textContent = truncate(access); valA.classList.remove('empty');
+  } else {
+    dotA.classList.remove('on'); valA.textContent = 'HttpOnly — not readable from JS (expected)'; valA.classList.add('empty');
+  }
+
+  if (csrf) {
+    dotC.classList.add('on'); valC.textContent = truncate(csrf); valC.classList.remove('empty');
+  } else {
+    dotC.classList.remove('on'); valC.textContent = 'not present'; valC.classList.add('empty');
+  }
+}
+
+function getApiBase() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('base') || 'http://127.0.0.1:8000';
+}
+
+document.getElementById('adminForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const base = getApiBase();
+  const resEl = document.getElementById('adminResult');
+  const csrf = getCookie('csrf_access_token');
+
+  if (!csrf) {
+    resEl.classList.add('show', 'err');
+    resEl.textContent = 'No csrf_access_token readable — sign in first, and confirm that cookie is not HttpOnly.';
+    return;
+  }
+
+  try {
+    const res = await fetch(base + '/admin_add', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrf   // default header name for fastapi-jwt-auth; adjust if you customized authjwt_access_csrf_header_name
+      },
+      body: JSON.stringify({
+        email: document.getElementById('adminEmail').value,
+        password: document.getElementById('adminPass').value
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+    resEl.classList.add('show');
+    resEl.classList.toggle('ok', res.ok);
+    resEl.classList.toggle('err', !res.ok);
+    resEl.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    resEl.classList.add('show', 'err');
+    resEl.textContent = 'Request failed: ' + err.message;
+  }
+});
+
+refreshStrip();
+setInterval(refreshStrip, 2000);
+</script>
+</body>
+</html>

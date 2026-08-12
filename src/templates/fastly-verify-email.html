@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify your email — Fastly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --fastly-red:#FF282D;
+    --fastly-red-dark:#D91B20;
+    --ink:#0B0C0E;
+    --ink-70:#43474D;
+    --ink-45:#7A7E85;
+    --hair:#E7E8EA;
+    --paper:#FFFFFF;
+    --panel:#FAFAFA;
+    --ok:#0F8A5F;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;height:100%;
+    background:var(--paper);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 40px;border-bottom:1px solid var(--hair);
+  }
+  .logo{
+    display:flex;align-items:center;gap:9px;
+    font-weight:700;font-size:19px;letter-spacing:-0.02em;color:var(--ink);
+  }
+  .logo .dot{
+    width:9px;height:9px;border-radius:50%;background:var(--fastly-red);
+    box-shadow:0 0 0 3px rgba(255,40,45,0.12);
+  }
+  .topbar .step{
+    font-family:'Roboto Mono',monospace;
+    font-size:12px;color:var(--ink-45);letter-spacing:.02em;
+  }
+  .stage{
+    min-height:calc(100vh - 73px);
+    display:flex;align-items:center;justify-content:center;
+    padding:32px 20px;
+  }
+  .card{
+    width:100%;max-width:440px;
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;
+  }
+  .ring-wrap{
+    position:relative;width:104px;height:104px;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:34px;
+  }
+  svg.spinner{
+    position:absolute;inset:0;
+    transform:rotate(-90deg);
+    transition:opacity .35s ease;
+  }
+  svg.spinner circle.track{
+    fill:none;stroke:var(--hair);stroke-width:3;
+  }
+  svg.spinner circle.arc{
+    fill:none;stroke:var(--fastly-red);stroke-width:3;
+    stroke-linecap:round;
+    stroke-dasharray:280;
+    stroke-dashoffset:210;
+    animation:spin 1.1s linear infinite;
+    transform-origin:52px 52px;
+  }
+  @keyframes spin{ to { transform:rotate(360deg); } }
+  .center-icon{
+    position:relative;z-index:2;
+    width:40px;height:40px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .center-icon svg{ width:100%;height:100%; display:block; }
+  .pulse-ring{
+    position:absolute;inset:0;border-radius:50%;
+    border:1px solid var(--fastly-red);
+    opacity:0; transform:scale(1);
+  }
+  .ring-wrap.done .pulse-ring{
+    animation:pulse 900ms ease-out;
+  }
+  @keyframes pulse{
+    0%{ opacity:.55; transform:scale(0.72); }
+    100%{ opacity:0; transform:scale(1.35); }
+  }
+  .ring-wrap.done svg.spinner{ opacity:0; }
+  .ring-wrap.done circle.done-circle{
+    fill:none;stroke:var(--ok);stroke-width:3;
+    stroke-dasharray:283;stroke-dashoffset:283;
+    animation:draw 480ms ease forwards .1s;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .check{
+    stroke:var(--ok);stroke-width:2.6;fill:none;
+    stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:24;stroke-dashoffset:24;
+    animation:checkin 300ms ease forwards .55s;
+  }
+  @keyframes checkin{ to{ stroke-dashoffset:0; } }
+  .mail-icon{ stroke:var(--ink-45); stroke-width:1.6; fill:none; }
+
+  .eyebrow{
+    font-family:'Roboto Mono',monospace;
+    font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-45);margin:0 0 14px;
+    transition:color .25s ease;
+  }
+  .eyebrow.ok{ color:var(--ok); }
+  h1{
+    font-size:23px;font-weight:600;letter-spacing:-0.01em;
+    margin:0 0 12px;line-height:1.3;
+  }
+  p.desc{
+    font-size:15px;line-height:1.6;color:var(--ink-70);
+    margin:0 0 8px;max-width:360px;
+  }
+  .addr{
+    font-weight:600;color:var(--ink);
+  }
+  .divider{
+    width:100%;height:1px;background:var(--hair);
+    margin:28px 0 22px;
+  }
+  .details{
+    width:100%;background:var(--panel);border:1px solid var(--hair);
+    border-radius:10px;padding:16px 18px;text-align:left;
+    opacity:0;transform:translateY(6px);
+    transition:opacity .4s ease .5s, transform .4s ease .5s;
+  }
+  .details.show{ opacity:1;transform:translateY(0); }
+  .details .row{
+    display:flex;justify-content:space-between;gap:12px;
+    font-size:13px;padding:6px 0;
+  }
+  .details .row + .row{ border-top:1px solid var(--hair); }
+  .details .k{ color:var(--ink-45); }
+  .details .v{ color:var(--ink);font-weight:500;text-align:right; }
+
+  .resend{
+    margin-top:22px;font-size:13.5px;color:var(--ink-45);
+  }
+  .resend button{
+    background:none;border:none;padding:0;margin-left:4px;
+    font:inherit;font-weight:600;color:var(--fastly-red);
+    cursor:pointer;text-decoration:none;
+  }
+  .resend button:hover{ text-decoration:underline; }
+  .resend button:disabled{ color:var(--ink-45);cursor:default;text-decoration:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    svg.spinner circle.arc{ animation:none; }
+    .pulse-ring, .check, .details, .eyebrow{ animation:none !important;transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span class="dot"></span>fastly</div>
+  <div class="step" id="stepLabel">step 3 of 3 — verify email</div>
+</div>
+
+<div class="stage">
+  <div class="card">
+
+    <div class="ring-wrap" id="ringWrap">
+      <span class="pulse-ring"></span>
+      <svg class="spinner" width="104" height="104" viewBox="0 0 104 104">
+        <circle class="track" cx="52" cy="52" r="46"></circle>
+        <circle class="arc" cx="52" cy="52" r="46"></circle>
+      </svg>
+      <svg width="104" height="104" viewBox="0 0 104 104" style="position:absolute;inset:0;" id="doneRingSvg">
+        <circle class="done-circle" cx="52" cy="52" r="45"></circle>
+      </svg>
+      <div class="center-icon" id="centerIcon">
+        <svg viewBox="0 0 24 24" class="mail-icon">
+          <path d="M3.5 5.5h17a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-17a1 1 0 0 1-1-1v-11a1 1 0 0 1 1-1Z"/>
+          <path d="m3 6.5 9 6.5 9-6.5"/>
+        </svg>
+      </div>
+    </div>
+
+    <p class="eyebrow" id="eyebrow">Sending verification</p>
+    <h1 id="heading">Sending your verification email</h1>
+    <p class="desc" id="desc">Hang tight — we're sending a verification link to <span class="addr" id="emailAddr">you@example.com</span>.</p>
+
+    <div class="divider"></div>
+
+    <div class="details" id="details">
+      <div class="row"><span class="k">Sent to</span><span class="v" id="detailEmail">you@example.com</span></div>
+      <div class="row"><span class="k">Link expires</span><span class="v">24 hours</span></div>
+      <div class="row"><span class="k">Status</span><span class="v" style="color:var(--ok);">Delivered</span></div>
+    </div>
+
+    <p class="resend">SignIn? <button href="http://127.0.0.1:8000/resend_email">Resend email</button></p>
+
+  </div>
+</div>
+
+<script>
+
+  const params = new URLSearchParams(window.location.search);
+  const userEmail = params.get('email') || 'your email';
+
+  document.getElementById('emailAddr').textContent = userEmail;
+  document.getElementById('detailEmail').textContent = userEmail;
+
+  function finish(){
+    var ringWrap = document.getElementById('ringWrap');
+    var eyebrow = document.getElementById('eyebrow');
+    var heading = document.getElementById('heading');
+    var desc = document.getElementById('desc');
+    var details = document.getElementById('details');
+    var mailIcon = document.getElementById('centerIcon');
+
+    ringWrap.classList.add('done');
+    eyebrow.textContent = 'Email sent';
+    eyebrow.classList.add('ok');
+    heading.textContent = 'Check your inbox';
+    desc.innerHTML = "We've sent a verification link to <span class='addr'>" + email + "</span>. Open it to finish setting up your account.";
+
+    setTimeout(function(){
+      mailIcon.innerHTML = '<svg viewBox="0 0 24 24" width="34" height="34"><path class="check" d="M5 12.5 10 17.5 19 7"/></svg>';
+    }, 480);
+
+    details.classList.add('show');
+  }
+
+  setTimeout(finish, 2200);
+
+  function getCookie(name) {
+    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return match ? match.pop() : '';
+  }
+
+  var resendBtn = document.getElementById('resendBtn');
+
+  resendBtn.addEventListener('click', async function(){
+    resendBtn.disabled = true;
+    resendBtn.textContent = 'Sending...';
+
+    var existingErr = document.querySelector('.resend .err');
+    if (existingErr) existingErr.remove();
+
+    try {
+      var csrfToken = getCookie('csrf_access_token');
+
+      var res = await fetch('http://127.0.0.1:8000/resend_email', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({})
+      });
+
+      if (!res.ok) {
+        var errBody = await res.json().catch(function(){ return {}; });
+        var msgText = 'Failed to resend';
+        if (Array.isArray(errBody.detail)) {
+          msgText = errBody.detail.map(function(d){ return d.msg; }).join(', ');
+        } else if (typeof errBody.detail === 'string') {
+          msgText = errBody.detail;
+        }
+        throw new Error(msgText);
+      }
+
+      resendBtn.textContent = 'Sent';
+    } catch (e) {
+      resendBtn.textContent = 'Resend email';
+      var msg = document.createElement('span');
+      msg.className = 'err';
+      msg.style.marginLeft = '6px';
+      msg.textContent = '(' + e.message + ')';
+      document.getElementById('resendWrap').appendChild(msg);
+    } finally {
+      setTimeout(function(){
+        resendBtn.disabled = false;
+        resendBtn.textContent = 'Resend email';
+      }, 4000);
+    }
+  });
+</script>
+
+</body>
+</html>

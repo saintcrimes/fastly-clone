@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Auth Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1419;
+    --panel: #161B22;
+    --panel-2: #1C232C;
+    --border: #2A313C;
+    --text: #E6EDF3;
+    --text-dim: #8B98A5;
+    --amber: #F2B705;
+    --teal: #2DD4BF;
+    --red: #F2555A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:'Inter',sans-serif;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  .card{
+    width:100%;max-width:380px;background:var(--panel);
+    border:1px solid var(--border);border-radius:10px;padding:28px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.12em;
+    text-transform:uppercase;color:var(--amber);margin-bottom:6px;
+  }
+  h1{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;margin:0 0 4px 0;}
+  .sub{color:var(--text-dim);font-size:13px;margin-bottom:22px;}
+
+  .config{margin-bottom:18px;}
+  .config label{display:block;font-size:11px;color:var(--text-dim);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;}
+  .config input{
+    width:100%;padding:9px 10px;background:var(--panel-2);border:1px solid var(--border);
+    border-radius:6px;color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:12px;outline:none;
+  }
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-dim);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;}
+  .field input{
+    width:100%;padding:10px 12px;background:var(--panel-2);
+    border:1px solid var(--border);border-radius:6px;color:var(--text);
+    font-family:'Inter',sans-serif;font-size:14px;outline:none;
+  }
+  .field input:focus{border-color:var(--amber);}
+
+  button{
+    width:100%;padding:11px;border:none;border-radius:6px;
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;
+    cursor:pointer;letter-spacing:0.02em;margin-top:4px;background:var(--amber);color:#1a1300;
+  }
+  button:hover{opacity:0.9;}
+  button:disabled{opacity:0.5;cursor:not-allowed;}
+
+  .result{
+    margin-top:14px;padding:12px;border-radius:6px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;
+    white-space:pre-wrap;word-break:break-word;display:none;
+  }
+  .result.show{display:block;}
+  .result.ok{background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.3);color:var(--teal);}
+  .result.err{background:rgba(242,85,90,0.08);border:1px solid rgba(242,85,90,0.3);color:var(--red);}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="eyebrow">Session Inspector</div>
+    <h1>Sign in</h1>
+    <div class="sub">Auth admin</div>
+
+    <div class="config">
+      <label>API BASE</label>
+      <input id="apiBase" type="text" value="http://127.0.0.1:8000">
+    </div>
+
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input type="email" id="loginUser" required></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPass" required></div>
+      <button type="submit" id="loginBtn">Sign in</button>
+    </form>
+    <div class="result" id="loginResult"></div>
+  </div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const base = document.getElementById('apiBase').value.replace(/\/$/, '');
+  const resEl = document.getElementById('loginResult');
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(base + '/admin_login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('loginUser').value,
+        password: document.getElementById('loginPass').value
+      })
+    });
+    const data = await res.json().catch(() => ({}));
+
+    resEl.classList.add('show');
+    if (res.ok) {
+      resEl.classList.add('ok'); resEl.classList.remove('err');
+      resEl.textContent = 'Signed in — redirecting…';
+      setTimeout(() => { window.location.href = '/admin_add'}, 500); //encodeURIComponent(base);
+    } else {
+      resEl.classList.add('err'); resEl.classList.remove('ok');
+      resEl.textContent = JSON.stringify(data, null, 2);
+      btn.disabled = false;
+    }
+  } catch (err) {
+    resEl.classList.add('show', 'err');
+    resEl.textContent = 'Request failed: ' + err.message;
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
