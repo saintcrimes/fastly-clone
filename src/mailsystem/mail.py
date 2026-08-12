@@ -1,7 +1,7 @@
 from fastapi.params import File
 from fastapi_mail import FastMail, ConnectionConfig, MessageSchema, MessageType
 from fastapi_mail.email_utils import DefaultChecker
-from mailsystem.config import Config
+from ..mailsystem.config import Config
 from pathlib import Path
 from typing import List
 import fastapi_mail.schemas as fm_schemas

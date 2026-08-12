@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, Body, Response, Request, BackgroundTasks, Query
 from sqlalchemy.exc import IntegrityError
-from schemas.register import Register, Admin_OK, PasswordChange
+from ..schemas.register import Register, Admin_OK, PasswordChange
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
-from db.base import get_db
-from db.models.model import users
+from ..db.base import get_db
+from ..db.models.model import users
 import bcrypt 
 from fastapi.responses import JSONResponse, RedirectResponse
 from authx import AuthX, AuthXConfig, TokenPayload, RateLimiter
 import os
 from dotenv import load_dotenv
 from pathlib import Path
-from utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
+from ..utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
 from fastapi.templating import Jinja2Templates
 from mailsystem.config import Config 
 from mailsystem.mail import create_message, mail
@@ -19,7 +19,7 @@ import logging, time
 from rich.logging import RichHandler
 from datetime import timedelta
 from datetime import datetime
-from schemas.auth import emailSchema
+from ..schemas.auth import emailSchema
 
 
 JWT_EXP = timedelta(minutes=Config.JWT_EXPIRY)

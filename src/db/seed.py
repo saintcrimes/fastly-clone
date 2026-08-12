@@ -1,12 +1,12 @@
 import asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
-from models.model import role
-from models import model
-from base import get_db
+from .models.model import role
+from .models import model
+from .base import get_db
 from sqlalchemy import select
 from typing import Annotated
 from fastapi import Depends
-from base import session as async_session
+from .base import session as async_session
 
 async def seed_roles():
 

@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from db.models import model
+from ..db.models import model
 from fastapi import HTTPException
 import bcrypt
 import logging

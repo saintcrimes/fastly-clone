@@ -1,17 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
-from db.base import get_db
+from ..db.base import get_db
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 import bcrypt 
-from schemas.auth import auth_log_in
-from utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
+from ..schemas.auth import auth_log_in
+from ..utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
 from .sign_up import auth, templates, TokenPayload, login_rate_limit
 from fastapi.responses import JSONResponse, RedirectResponse, Response
-from schemas.register import Admin_OK
+from ..schemas.register import Admin_OK
 from datetime import timedelta
 from fastapi.responses import RedirectResponse
-from mailsystem.mail import create_message, mail
-from mailsystem.config import Config
+from ..mailsystem.mail import create_message, mail
+from ..mailsystem.config import Config
 
 
 fifteen_minute = timedelta(minutes=5)

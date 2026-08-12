@@ -11,6 +11,8 @@ from redis.asyncio import Redis
 from fastapi_mail.email_utils import DefaultChecker
 from .mailsystem.config import Config
 from loguru import logger
+from .db.seed import seed_roles 
+
 
 templates = Jinja2Templates(directory="templates")
 
@@ -34,6 +36,8 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Could not fetch temp emails domain: {e}")
     # app.state.email_checker = checker
+
+    await seed_roles()
 
     yield
 
