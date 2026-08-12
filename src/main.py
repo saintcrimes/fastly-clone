@@ -9,6 +9,8 @@ from authx.exceptions import MissingTokenError, RateLimitExceeded
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import Redis
 from fastapi_mail.email_utils import DefaultChecker
+from mailsystem.config import Config
+from loguru import logger
 
 templates = Jinja2Templates(directory="templates")
 
@@ -18,15 +20,15 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
 
 
-    redis_client = Redis.from_url("redis://localhost:6379/")
-
+    redis_client = Redis.from_url(Config.REDIS_HOST)
+    # if you want to add here redis you uncomment variables inside of DefaultChecker()
     checker = DefaultChecker(
-        db_provider="redis",
-        redis_client=redis_client
+        # db_provider="redis",
+        # redis_client=redis_client
     )
 
     await checker.fetch_temp_email_domains()
-    await checker.init_redis()
+    # await checker.init_redis()
 
     app.state.email_checker = checker
 
