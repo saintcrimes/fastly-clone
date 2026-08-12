@@ -4,7 +4,7 @@ import uvicorn
 from .db.base import engine, Base
 from contextlib import asynccontextmanager
 from .db.models import model
-from routers import sign_up, authentication
+from .routers import sign_up, authentication
 from authx.exceptions import MissingTokenError, RateLimitExceeded
 from fastapi.responses import RedirectResponse, JSONResponse
 from redis.asyncio import Redis
