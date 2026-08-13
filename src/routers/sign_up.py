@@ -40,7 +40,9 @@ logging.basicConfig(
 
 logger = logging.getLogger("mail")
 
-templates = Jinja2Templates(directory="templates")
+template_path = "temp/templates" if os.environ.get("VERCEL") else "templates"
+
+templates = Jinja2Templates(directory=template_path)
 
 path = Path(
     __file__
