@@ -42,7 +42,9 @@ logger = logging.getLogger("mail")
 
 template_path = "/temp/templates" if os.environ.get("VERCEL") else "templates"
 
-templates = Jinja2Templates(directory=template_path)
+path_join = os.path.join("src", template_path)
+
+templates = Jinja2Templates(directory=path_join)
 
 path = Path(
     __file__
