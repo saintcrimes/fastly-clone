@@ -21,6 +21,8 @@ from datetime import timedelta
 from datetime import datetime
 from ..schemas.auth import emailSchema
 import os
+from pathlib import Path
+
 
 log_path = "/tmp/info.log" if os.environ.get("VERCEL") else "info.log"
 
@@ -40,11 +42,9 @@ logging.basicConfig(
 
 logger = logging.getLogger("mail")
 
-template_path = "/temp/templates" if os.environ.get("VERCEL") else "templates"
+path = Path(__file__).resolve().parent.parent / "templates"
 
-path_join = os.path.join("src", template_path)
-
-templates = Jinja2Templates(directory=path_join)
+templates = Jinja2Templates(directory=path)
 
 path = Path(
     __file__
