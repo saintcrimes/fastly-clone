@@ -1,11 +1,8 @@
-from fastapi.params import File
-from fastapi_mail import FastMail, ConnectionConfig, MessageSchema, MessageType
-from fastapi_mail.email_utils import DefaultChecker
-from ..mailsystem.config import Config
 from pathlib import Path
-from typing import List
-import fastapi_mail.schemas as fm_schemas
 
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+
+from ..mailsystem.config import Config
 
 # fm_schemas.validate_path = lambda path: True
 
@@ -31,7 +28,7 @@ mail = FastMail(
     config=mail_config
 )
 
-def create_message(recipients: List[str], subject: str, body:str = None, template_body: dict = None):
+def create_message(recipients: list[str], subject: str, body:str = None, template_body: dict = None):
     message = MessageSchema(
         recipients=recipients,
         subject=subject,

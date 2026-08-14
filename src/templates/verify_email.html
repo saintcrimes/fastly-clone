@@ -227,7 +227,7 @@ resendBtn.addEventListener('click', async function(){
   try {
     var csrfToken = getCookie('csrf_access_token');
 
-    var res = await fetch('http://127.0.0.1:8000/resend_email', {
+    var res = await fetch('/resend_email', {
       method: 'POST',
       credentials: 'include',           // sends access_token_cookie automatically
       headers: {

@@ -1,13 +1,14 @@
-from sqlalchemy import select
-from ..db.models import model
-from fastapi import HTTPException
+
 import bcrypt
-import logging
+from fastapi import HTTPException
 from fastapi.responses import JSONResponse
 from itsdangerous import URLSafeTimedSerializer
-from ..mailsystem.config import Config
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..db.models import model
 from ..db.models.model import users
+from ..mailsystem.config import Config
 
 serializer = URLSafeTimedSerializer(
     secret_key=Config.JWT_SECRET_KEY,
@@ -35,7 +36,7 @@ class user_service:
         email_verification = result.email_verified
 
         if email_verification is False:
-            False
+            return False
 
         if role_user is None:
             raise HTTPException(

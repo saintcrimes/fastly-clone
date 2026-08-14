@@ -1,10 +1,10 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from dotenv import load_dotenv
 from pathlib import Path
-import os
-from sqlalchemy.orm import DeclarativeBase
-from ..mailsystem.config import Config
 
+from dotenv import load_dotenv
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase
+
+from ..mailsystem.config import Config
 
 path = Path(__file__).resolve().parent.parent.parent / ".env"
 

@@ -150,7 +150,7 @@ function refreshStrip() {
 
 function getApiBase() {
   const params = new URLSearchParams(window.location.search);
-  return params.get('base') || 'http://127.0.0.1:8000';
+  return params.get('base') || '';
 }
 
 document.getElementById('adminForm').addEventListener('submit', async (e) => {

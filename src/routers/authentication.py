@@ -1,18 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
-from ..db.base import get_db
-from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-import bcrypt 
-from ..schemas.auth import auth_log_in
-from ..utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
-from .sign_up import auth, templates, TokenPayload, login_rate_limit
-from fastapi.responses import JSONResponse, RedirectResponse, Response
-from ..schemas.register import Admin_OK
 from datetime import timedelta
-from fastapi.responses import RedirectResponse
-from ..mailsystem.mail import create_message, mail
-from ..mailsystem.config import Config
+from typing import Annotated
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse, RedirectResponse, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..db.base import get_db
+from ..mailsystem.config import Config
+from ..mailsystem.mail import create_message, mail
+from ..schemas.auth import auth_log_in
+from ..schemas.register import Admin_OK
+from ..utils.utils import create_safe_url_token, user_regulation
+from .sign_up import TokenPayload, auth, login_rate_limit, templates
 
 fifteen_minute = timedelta(minutes=5)
 thirty_days = timedelta(days=30)
@@ -40,7 +39,7 @@ async def signin(session: session, data: auth_log_in, response: Response, backgr
 
         token = create_safe_url_token({"email": data.email})
         
-        link = f"http://{Config.DOMAIN}/api/v1/verify/{token}"
+        link = f"https://{Config.DOMAIN}/api/v1/verify/{token}"
         
         html_message = f"""
             <h1> Verify your email </h1>

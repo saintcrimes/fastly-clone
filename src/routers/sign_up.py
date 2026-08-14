@@ -1,28 +1,35 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, Response, Request, BackgroundTasks, Query
-from sqlalchemy.exc import IntegrityError
-from ..schemas.register import Register, Admin_OK, PasswordChange
+import logging
+import os
+from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Annotated
+
+import bcrypt
+from authx import AuthX, AuthXConfig, RateLimiter, TokenPayload
+from dotenv import load_dotenv
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Body,
+    Depends,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+)
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+from rich.logging import RichHandler
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from ..db.base import get_db
 from ..db.models.model import users
-import bcrypt 
-from fastapi.responses import JSONResponse, RedirectResponse
-from authx import AuthX, AuthXConfig, TokenPayload, RateLimiter
-import os
-from dotenv import load_dotenv
-from pathlib import Path
-from ..utils.utils import user_regulation, create_safe_url_token, decode_url_safe_token
-from fastapi.templating import Jinja2Templates
-from ..mailsystem.config import Config 
+from ..mailsystem.config import Config
 from ..mailsystem.mail import create_message, mail
-import logging, time
-from rich.logging import RichHandler
-from datetime import timedelta
-from datetime import datetime
 from ..schemas.auth import emailSchema
-import os
-from pathlib import Path
-
+from ..schemas.register import Admin_OK, PasswordChange, Register
+from ..utils.utils import create_safe_url_token, decode_url_safe_token, user_regulation
 
 log_path = "/tmp/info.log" if os.environ.get("VERCEL") else "info.log"
 
@@ -120,7 +127,7 @@ async def sign_up(
 
     token = create_safe_url_token({"email": data.email})
 
-    link = f"http://{Config.DOMAIN}/api/v1/verify/{token}"
+    link = f"https://{Config.DOMAIN}/api/v1/verify/{token}"
 
     html_message = f"""
     <h1> Verify your email </h1>

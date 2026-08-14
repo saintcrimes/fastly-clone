@@ -1,8 +1,15 @@
-from ..base import Base
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, func, ForeignKey, Column, Integer, Table, Boolean
 from datetime import datetime
-from typing import List
+
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    String,
+    func,
+)
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from ..base import Base
 
 
 class users(Base):
@@ -26,5 +33,5 @@ class role(Base):
     __tablename__ = "role"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True)
-    users: Mapped[List["users"]] = relationship(back_populates="role")
+    users: Mapped[list["users"]] = relationship(back_populates="role")
     
